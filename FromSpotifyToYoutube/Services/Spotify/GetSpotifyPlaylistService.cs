@@ -28,7 +28,7 @@ namespace FromSpotifyToYoutube.Services.Spotify
 
         public async Task<SpotifyPlaylist> GetPlaylist(string accessToken, string playlistUrl)
         {
-            _logger.LogInformation("Getting playlist using token {token}", accessToken);
+            _logger.LogInformation("Getting playlist using access token");
 
             var tmp = playlistUrl.Split("/");
             var tmp2 = tmp[tmp.Length - 1];
