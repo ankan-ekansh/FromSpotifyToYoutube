@@ -10,13 +10,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Reflection.Metadata;
 using System.Text.Json;
 using System.Net.Http;
 using MongoDB.Driver;
 using FromSpotifyToYoutube.Interfaces.MongoDB;
-using Amazon.Runtime.Internal.Transform;
-using FromSpotifyToYoutube.Models.MongoDB;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.Extensions.Configuration;
 

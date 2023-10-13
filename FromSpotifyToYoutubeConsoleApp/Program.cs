@@ -1,12 +1,4 @@
-﻿using FromSpotifyToYoutube.Interfaces.FromSpotifyToYoutube;
-using FromSpotifyToYoutube.Interfaces.MongoDB;
-using FromSpotifyToYoutube.Interfaces.Spotify;
-using FromSpotifyToYoutube.Interfaces.Youtube;
-using FromSpotifyToYoutube.Models.MongoDB;
-using FromSpotifyToYoutube.Repositories.MongoDB;
-using FromSpotifyToYoutube.Services;
-using FromSpotifyToYoutube.Services.Spotify;
-using FromSpotifyToYoutube.Services.Youtube;
+﻿using FromSpotifyToYoutube.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
