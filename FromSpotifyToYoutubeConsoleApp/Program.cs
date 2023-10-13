@@ -4,6 +4,7 @@ using FromSpotifyToYoutube.Interfaces.Spotify;
 using FromSpotifyToYoutube.Interfaces.Youtube;
 using FromSpotifyToYoutube.Models.MongoDB;
 using FromSpotifyToYoutube.Repositories.MongoDB;
+using FromSpotifyToYoutube.Services;
 using FromSpotifyToYoutube.Services.Spotify;
 using FromSpotifyToYoutube.Services.Youtube;
 using Microsoft.Extensions.Configuration;
@@ -45,14 +46,7 @@ namespace FromSpotifyToYoutubeConsoleApp
                 .ConfigureServices((context, services) =>
                 {
                     services.AddSingleton<App>();
-                    services.AddSingleton<ISpotifyAccessTokenService, SpotifyAccessTokenService>();
-                    services.AddSingleton<IFromSpotifyToYoutube, FromSpotifyToYoutube.FromSpotifyToYoutube>();
-                    services.AddSingleton<IGetSpotifyPlaylistService, GetSpotifyPlaylistService>();
-                    services.AddSingleton<IYoutubeClient, YoutubeClient>();
-                    services.AddSingleton<IChannelsContext, ChannelsContext>();
-                    services.AddSingleton<IChannelsRepository, ChannelsRepository>();
-                    services.AddSingleton<IVideosContext, VideosContext>();
-                    services.AddSingleton<IVideosRepository, VideosRepository>();
+                    services.RegisterServices(config);
                 })
                 .ConfigureLogging(opt =>
                 {
