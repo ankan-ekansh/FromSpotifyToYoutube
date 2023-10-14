@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace FromSpotifyToYoutube.Services.Spotify
 {
@@ -68,6 +69,11 @@ namespace FromSpotifyToYoutube.Services.Spotify
                         _logger.LogInformation("Received {count} tracks in the Spotify playlist", playlist.Tracks.PlaylistTrackListItems.Length);
                         return playlist;
                     }
+                    else if(response.StatusCode.Equals(HttpStatusCode.NotFound))
+                    {
+                        _logger.LogInformation("No results found for the search {playlistUrl}", playlistUrl);
+                        throw new Exception($"No results found for the search {playlistUrl}");
+                    }
                     else
                     {
                         _logger.LogError("Request failed with status code: {stausCode}", response.StatusCode);
@@ -76,6 +82,7 @@ namespace FromSpotifyToYoutube.Services.Spotify
                 catch (Exception ex)
                 {
                     _logger.LogError("An error occurred: {errorMessage}", ex.Message);
+                    throw;
                 }
             }
             return new SpotifyPlaylist();
