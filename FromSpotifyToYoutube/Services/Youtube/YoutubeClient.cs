@@ -33,13 +33,13 @@ namespace FromSpotifyToYoutube.Services.Youtube
 
         // Create a mapping from Artist -> Tracks
         Dictionary<string, List<string>> mapping = new Dictionary<string, List<string>>();
-        // Temporary cache for Successful Channel title to id mapping
+        // Temporary variable for Successful Channel title to id mapping
         Dictionary<string, string> channelIds = new Dictionary<string, string>();
-        // Temporary cache for unsuccessful channel title to id mapping, query these directly via search
+        // Temporary variable for unsuccessful channel title to id mapping, query these directly via search
         List<string> nonOfficialChannels = new List<string>();
-        // Temporary cache for tracks not found in official artist upload playlist, query these directly via search
+        // Temporary variable for tracks not found in official artist upload playlist, query these directly via search
         List<string> remainingTracks = new List<string>();
-        // Temporary cache for successfully retrieved youtube videos
+        // Temporary variable for successfully retrieved youtube videos
         List<string> youtubeTracks = new List<string>();
 
         public YoutubeClient(ILogger<YoutubeClient> logger,
