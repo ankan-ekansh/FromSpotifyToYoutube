@@ -160,7 +160,7 @@ namespace FromSpotifyToYoutube.Services.Youtube
                 await Task.WhenAll(remainingTasks);
 
                 // POST task
-                await CreatePlaylistAndAddTracks();
+                await CreatePlaylistAndAddTracks(playlist.Name);
             }
         }
 
@@ -371,7 +371,7 @@ namespace FromSpotifyToYoutube.Services.Youtube
             return trackName.Substring(0, idx != -1 ? idx-1 : trackName.Length).Trim();
         }
 
-        private async Task CreatePlaylistAndAddTracks()
+        private async Task CreatePlaylistAndAddTracks(string playlistName)
         {
             UserCredential credential;
 
@@ -394,15 +394,13 @@ namespace FromSpotifyToYoutube.Services.Youtube
                 ApplicationName = _applicationName,
             });
 
-            // Naming scheme for playlist is currently the date in DD-MM-YYYY - assuming the playlist would be reused
-            // Find if the playlist already exists, if it exists do nothing for now - later we will append to this playlist
+            // Playlist is named the same as the spotify playlist
             var playlistListRequest = service.Playlists.List("snippet");
             playlistListRequest.Mine = true;
 
             var playlistListResponse = await playlistListRequest.ExecuteAsync();
 
             List<Playlist> playlists = playlistListResponse.Items.ToList();
-            string playlistName = DateTime.Now.ToShortDateString();
 
             Playlist playlist;
             playlist = playlists.FirstOrDefault(x => x.Snippet.Title.Equals(playlistName, StringComparison.OrdinalIgnoreCase), null);
@@ -483,34 +481,42 @@ namespace FromSpotifyToYoutube.Services.Youtube
 
         private async Task InsertToPlaylist(YouTubeService service, string playlistId, string videoId)
         {
-            // Get the Video Resource
-            var videoRequest = service.Videos.List("snippet");
-            videoRequest.Id = videoId;
-
-            var videoResponse = await videoRequest.ExecuteAsync();
-            Google.Apis.YouTube.v3.Data.Video video = videoResponse.Items.FirstOrDefault();
-
-            ResourceId resourceId = new ResourceId()
+            try
             {
-                Kind = "youtube#video",
-                VideoId = video.Id,
-            };
-            PlaylistItemSnippet playlistItemSnippet = new PlaylistItemSnippet()
+                // Get the Video Resource
+                var videoRequest = service.Videos.List("snippet");
+                videoRequest.Id = videoId;
+
+                var videoResponse = await videoRequest.ExecuteAsync();
+                Google.Apis.YouTube.v3.Data.Video video = videoResponse.Items.FirstOrDefault();
+
+                ResourceId resourceId = new ResourceId()
+                {
+                    Kind = "youtube#video",
+                    VideoId = video.Id,
+                };
+                PlaylistItemSnippet playlistItemSnippet = new PlaylistItemSnippet()
+                {
+                    PlaylistId = playlistId,
+                    ResourceId = resourceId,
+                };
+                PlaylistItem playlistItem = new PlaylistItem()
+                {
+                    Snippet = playlistItemSnippet
+                };
+
+                var playlistItemsInsertRequest = service.PlaylistItems.Insert(playlistItem, "snippet");
+
+                var playlistItemsInsertResponse = await playlistItemsInsertRequest.ExecuteAsync();
+
+                Console.WriteLine($"Video with Title {video.Snippet.Title} added to playlist");
+                _logger.LogInformation("Video with Title {title} added to playlist id {playlistId}", video.Snippet.Title, playlistItemsInsertResponse.Snippet.PlaylistId);
+            }
+            catch (Exception ex)
             {
-                PlaylistId = playlistId,
-                ResourceId = resourceId,
-            };
-            PlaylistItem playlistItem = new PlaylistItem()
-            {
-                Snippet = playlistItemSnippet
-            };
-
-            var playlistItemsInsertRequest = service.PlaylistItems.Insert(playlistItem, "snippet");
-
-            var playlistItemsInsertResponse = await playlistItemsInsertRequest.ExecuteAsync();
-
-            Console.WriteLine($"Video with Title {video.Snippet.Title} added to playlist");
-            _logger.LogInformation("Video with Title {title} added to playlist id {playlistId}", video.Snippet.Title, playlistItemsInsertResponse.Snippet.PlaylistId);
+                _logger.LogError("An error occurred while inserting {videoId} to playlist {playlistId}", videoId, playlistId);
+                _logger.LogError(ex.Message, ex);
+            }
         }
     }
 }
